@@ -20,6 +20,7 @@ modules:
   - type: dnf
     install:
       packages:
+        - adw-gtk3-theme
         - btop
         - dmidecode
         - fish

@@ -20,6 +20,9 @@ modules:
   - type: dnf
     install:
       packages:
+        - btop
+        - dmidecode
+        - fish
         - niri
         - noctalia
 
@@ -29,6 +32,7 @@ modules:
         scope: system
         # If no repo information is specified, Flathub will be used by default
         install: # system flatpaks we want all users to have and not remove
+          - io.github.kolunmi.Bazaar
           - org.mozilla.firefox
           - org.gnome.Loupe
       - scope: user # Also add Flathub user repo, but no user packages

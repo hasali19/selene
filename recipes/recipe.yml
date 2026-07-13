@@ -22,10 +22,12 @@ modules:
       packages:
         - adw-gtk3-theme
         - btop
+        - cascadia-code-nf-fonts
         - dmidecode
         - fish
         - niri
         - noctalia
+        - openconnect
 
   - type: default-flatpaks
     configurations:

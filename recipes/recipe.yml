@@ -30,6 +30,11 @@ modules:
         - niri
         - noctalia
         - openconnect
+  
+  - type: systemd
+    system:
+      enabled:
+        - greetd.service
 
   - type: default-flatpaks
     configurations:

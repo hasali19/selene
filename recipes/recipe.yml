@@ -25,6 +25,7 @@ modules:
         - cascadia-code-nf-fonts
         - dmidecode
         - fish
+        - greetd
         - nautilus
         - niri
         - noctalia

@@ -27,6 +27,7 @@ modules:
         - fish
         - greetd
         - libatomic
+        - liquidctl
         - nautilus
         - niri
         - noctalia

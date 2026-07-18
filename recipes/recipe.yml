@@ -31,6 +31,16 @@ modules:
         - noctalia
         - openconnect
   
+  - type: dnf
+    repos:
+      keys:
+        - https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg
+      files:
+        - vscodium.repo
+    install:
+      packages:
+        - codium
+
   - type: systemd
     system:
       enabled:

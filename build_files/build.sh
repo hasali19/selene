@@ -15,7 +15,7 @@ cp -avf "/ctx/system_files"/. /
 # this installs a package from fedora repos
 dnf5 install -y adw-gtk3-theme btop fish greetd nautilus niri noctalia openconnect
 
-./install-vscodium.sh
+bash /ctx/install-vscodium.sh
 
 # Use a COPR Example:
 #

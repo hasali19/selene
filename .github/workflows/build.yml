@@ -40,3 +40,7 @@ jobs:
 
           # enabled by default, disable if your image is small and you want faster builds
           maximize_build_space: true
+
+          # rechunking makes builds slower, so only do it for builds that will
+          # actually be published from the default branch
+          rechunk: ${{ github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}

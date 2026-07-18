@@ -26,6 +26,7 @@ modules:
         - dmidecode
         - fish
         - greetd
+        - libatomic
         - nautilus
         - niri
         - noctalia

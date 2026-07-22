@@ -24,6 +24,7 @@ modules:
         - btop
         - cascadia-code-nf-fonts
         - dmidecode
+        - edk2-ovmf
         - fish
         - greetd
         - libatomic
@@ -32,6 +33,7 @@ modules:
         - niri
         - noctalia
         - openconnect
+        - swtpm-tools
         - waypipe
   
   - type: dnf

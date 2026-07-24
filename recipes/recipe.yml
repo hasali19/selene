@@ -26,6 +26,7 @@ modules:
         - dmidecode
         - edk2-ovmf
         - fish
+        - gnome-boxes
         - greetd
         - kde-connect
         - libatomic

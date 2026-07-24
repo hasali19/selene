@@ -27,6 +27,7 @@ modules:
         - edk2-ovmf
         - fish
         - greetd
+        - kde-connect
         - libatomic
         - liquidctl
         - nautilus

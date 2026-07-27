@@ -19,20 +19,18 @@ modules:
 
   # Replace the stock Fedora kernel with kernel-cachyos
   # https://github.com/CachyOS/copr-linux-cachyos
-  - type: dnf
-    repos:
-      copr:
-        - bieszczaders/kernel-cachyos
-    install:
-      packages:
-        - kernel-cachyos
-    remove:
-      packages:
-        - kernel
-        - kernel-core
-        - kernel-modules
-        - kernel-modules-core
-        - kernel-modules-extra
+  #
+  # Installed via a script rather than the declarative dnf module because
+  # kernel-cachyos-core's %posttrans scriptlet runs dracut before depmod
+  # has run, which fails the build. Scripts are disabled for the install
+  # and the initramfs is regenerated manually afterwards instead.
+  - type: script
+    snippets:
+      - dnf5 -y copr enable bieszczaders/kernel-cachyos
+      - dnf5 -y remove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra
+      - dnf5 -y --setopt=tsflags=noscripts install kernel-cachyos
+      - dnf5 -y copr disable bieszczaders/kernel-cachyos
+      - KVER=$(basename /usr/lib/modules/*) && depmod -a "$KVER" && dracut --kver "$KVER" --force --no-hostonly --reproducible --add ostree "/usr/lib/modules/$KVER/initramfs.img"
 
   - type: dnf
     install:

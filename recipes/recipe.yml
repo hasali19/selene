@@ -17,20 +17,14 @@ modules:
       - source: system
         destination: / # copies files/system/* (* means everything inside it) into your image's root folder /
 
-  # Replace the stock Fedora kernel with kernel-cachyos
-  # https://github.com/CachyOS/copr-linux-cachyos
-  #
-  # Installed via a script rather than the declarative dnf module because
-  # kernel-cachyos-core's %posttrans scriptlet runs dracut before depmod
-  # has run, which fails the build. Scripts are disabled for the install
-  # and the initramfs is regenerated manually afterwards instead.
-  - type: script
-    snippets:
-      - dnf5 -y copr enable bieszczaders/kernel-cachyos
-      - dnf5 -y remove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra
-      - dnf5 -y --setopt=tsflags=noscripts install kernel-cachyos
-      - dnf5 -y copr disable bieszczaders/kernel-cachyos
-      - KVER=$(basename /usr/lib/modules/*) && depmod -a "$KVER" && dracut --kver "$KVER" --force --no-hostonly --reproducible --add ostree "/usr/lib/modules/$KVER/initramfs.img"
+  # Replace the stock Fedora kernel with the ogc kernel (kernel-bazzite),
+  # the same one Bazzite ships. RPMs come from ublue-os's prebuilt akmods
+  # cache image rather than a COPR.
+  # https://github.com/bazzite-org/kernel-bazzite
+  # https://github.com/ublue-os/akmods
+  - type: containerfile
+    containerfiles:
+      - kernel-ogc
 
   - type: dnf
     install:

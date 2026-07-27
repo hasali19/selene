@@ -1,0 +1,31 @@
+# Swap the stock Fedora kernel for the ogc kernel (kernel-bazzite), sourced
+# from ublue-os's prebuilt akmods cache image for Fedora 44. This mirrors
+# Bazzite's own build_files/install-kernel-akmods script:
+# https://github.com/ublue-os/bazzite/blob/main/build_files/install-kernel-akmods
+#
+# The kernel-install.d hooks are shimmed out during install because
+# kernel-cachyos/kernel-bazzite's %posttrans scriptlet tries to run
+# dracut before depmod has generated modules.dep for the new kernel,
+# which fails the transaction. The initramfs is regenerated manually
+# afterwards instead.
+RUN --mount=type=bind,from=ghcr.io/ublue-os/akmods:ogc-44,src=/kernel-rpms,dst=/tmp/kernel-rpms \
+    set -eu && \
+    mv /usr/lib/kernel/install.d/05-rpmostree.install /usr/lib/kernel/install.d/05-rpmostree.install.bak && \
+    mv /usr/lib/kernel/install.d/50-dracut.install /usr/lib/kernel/install.d/50-dracut.install.bak && \
+    printf '%s\n' '#!/bin/sh' 'exit 0' > /usr/lib/kernel/install.d/05-rpmostree.install && \
+    printf '%s\n' '#!/bin/sh' 'exit 0' > /usr/lib/kernel/install.d/50-dracut.install && \
+    chmod +x /usr/lib/kernel/install.d/05-rpmostree.install /usr/lib/kernel/install.d/50-dracut.install && \
+    for pkg in kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra kernel-tools-libs kernel-tools; do \
+        rpm --erase "${pkg}" --nodeps; \
+    done && \
+    rm -rf /usr/lib/modules && \
+    dnf5 -y install \
+        /tmp/kernel-rpms/kernel-[0-9]*.rpm \
+        /tmp/kernel-rpms/kernel-core-*.rpm \
+        /tmp/kernel-rpms/kernel-modules-*.rpm \
+        /tmp/kernel-rpms/kernel-devel-*.rpm && \
+    mv -f /usr/lib/kernel/install.d/05-rpmostree.install.bak /usr/lib/kernel/install.d/05-rpmostree.install && \
+    mv -f /usr/lib/kernel/install.d/50-dracut.install.bak /usr/lib/kernel/install.d/50-dracut.install && \
+    KVER=$(basename /usr/lib/modules/*) && \
+    depmod -a "${KVER}" && \
+    dracut --kver "${KVER}" --force --no-hostonly --reproducible --add ostree "/usr/lib/modules/${KVER}/initramfs.img"

@@ -19,17 +19,20 @@ modules:
 
   # Replace the stock Fedora kernel with kernel-cachyos
   # https://github.com/CachyOS/copr-linux-cachyos
-  - type: rpm-ostree
+  - type: dnf
     repos:
-      - https://copr.fedorainfracloud.org/coprs/bieszczaders/kernel-cachyos/repo/fedora-%OS_VERSION%/bieszczaders-kernel-cachyos-fedora-%OS_VERSION%.repo
+      copr:
+        - bieszczaders/kernel-cachyos
     install:
-      - kernel-cachyos
+      packages:
+        - kernel-cachyos
     remove:
-      - kernel
-      - kernel-core
-      - kernel-modules
-      - kernel-modules-core
-      - kernel-modules-extra
+      packages:
+        - kernel
+        - kernel-core
+        - kernel-modules
+        - kernel-modules-core
+        - kernel-modules-extra
 
   - type: dnf
     install:

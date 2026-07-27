@@ -41,12 +41,12 @@ modules:
   - type: dnf
     repos:
       keys:
-        - https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg
+        - https://packages.microsoft.com/keys.microsoft.asc
       files:
-        - vscodium.repo
+        - vscode.repo
     install:
       packages:
-        - codium
+        - code
 
   - type: systemd
     system:

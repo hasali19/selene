@@ -36,6 +36,7 @@ modules:
         - kde-connect
         - libatomic
         - liquidctl
+        - mangohud
         - nautilus
         - niri
         - noctalia

@@ -36,23 +36,12 @@ modules:
         - kde-connect
         - libatomic
         - liquidctl
-        - mangohud
         - nautilus
         - niri
         - noctalia
         - openconnect
         - swtpm-tools
         - waypipe
-
-  - type: dnf
-    repos:
-      keys:
-        - https://packages.microsoft.com/keys/microsoft.asc
-      files:
-        - vscode.repo
-    install:
-      packages:
-        - code
 
   - type: systemd
     system:

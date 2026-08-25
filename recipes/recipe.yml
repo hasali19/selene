@@ -34,6 +34,7 @@ modules:
         - gnome-boxes
         - greetd
         - kde-connect
+        - kf6-kitemmodels  # required for kde connect plugin settings to work
         - libatomic
         - liquidctl
         - nautilus

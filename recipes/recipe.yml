@@ -46,27 +46,29 @@ modules:
 
   # sysc-greet's own %post RPM scriptlet can't see groups created earlier in
   # the build (RPM scriptlets run sandboxed from live /etc/group, verified
-  # via a diagnostic build), AND /etc/group changes don't survive into a
-  # later, separate RUN layer either (verified: a follow-up "script" module
-  # step, in its own layer, hit the same "group does not exist" error even
-  # though the prior layer's groupadd had already succeeded). The only
-  # layer where the groups are reliably visible is the one they're created
-  # in, so everything - group creation, the noscripts install, and
-  # replicating sysc-greet's postinstall.sh
-  # (github.com/Nomadcxx/sysc-greet/blob/v1.1.9/scripts/postinstall.sh) for
-  # the greeter user/dirs/greetd config - has to happen in one RUN.
+  # via a diagnostic build). Nor do /etc/group changes survive into a later,
+  # separate RUN layer. Nor, it turns out, do they survive a `dnf5 install`
+  # call even later in the *same* RUN chain (verified: our own useradd right
+  # after `dnf5 install --setopt=tsflags=noscripts` in the same shell chain
+  # still hit "group does not exist" - dnf5 itself resets /etc/group as a
+  # side effect, scripts or not). So group/user/dir/config setup - a
+  # replica of sysc-greet's postinstall.sh
+  # (github.com/Nomadcxx/sysc-greet/blob/v1.1.9/scripts/postinstall.sh) -
+  # all happens BEFORE dnf5 runs, in the same RUN. Plain file installation
+  # with scripts disabled doesn't need "greeter" to already exist, so
+  # ordering it last avoids the problem entirely.
   - type: containerfile
     snippets:
       - |
         RUN groupadd -f -r video && \
             groupadd -f -r render && \
             groupadd -f -r input && \
-            dnf5 install -y --setopt=tsflags=noscripts https://github.com/Nomadcxx/sysc-greet/releases/download/v1.1.9/sysc-greet-1.1.9-1.x86_64.rpm && \
             useradd -M -d /var/lib/greeter -G video,render,input -s /usr/bin/nologin greeter && \
             mkdir -p /var/cache/sysc-greet /var/lib/greeter/Pictures/wallpapers /var/lib/greeter/.cache /var/lib/greeter/.config /var/lib/greeter/.local/state /tmp/greeter-cache && \
             chown -R greeter:greeter /var/cache/sysc-greet /var/lib/greeter /tmp/greeter-cache && \
             chmod 755 /var/lib/greeter && \
-            printf '%s\n' '[terminal]' 'vt = 1' '' '[default_session]' 'command = "niri -c /etc/greetd/niri-greeter-config.kdl"' 'user = "greeter"' '' '[initial_session]' 'command = "niri -c /etc/greetd/niri-greeter-config.kdl"' 'user = "greeter"' > /etc/greetd/config.toml
+            printf '%s\n' '[terminal]' 'vt = 1' '' '[default_session]' 'command = "niri -c /etc/greetd/niri-greeter-config.kdl"' 'user = "greeter"' '' '[initial_session]' 'command = "niri -c /etc/greetd/niri-greeter-config.kdl"' 'user = "greeter"' > /etc/greetd/config.toml && \
+            dnf5 install -y --setopt=tsflags=noscripts https://github.com/Nomadcxx/sysc-greet/releases/download/v1.1.9/sysc-greet-1.1.9-1.x86_64.rpm
 
   - type: systemd
     system:

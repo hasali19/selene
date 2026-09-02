@@ -47,23 +47,29 @@ modules:
   # sysc-greet's own %post RPM scriptlet can't see groups created earlier in
   # the build (RPM scriptlets run sandboxed from live /etc/group, verified
   # via a diagnostic build). Nor do /etc/group changes survive into a later,
-  # separate RUN layer. Nor, it turns out, do they survive a `dnf5 install`
-  # call even later in the *same* RUN chain (verified: our own useradd right
-  # after `dnf5 install --setopt=tsflags=noscripts` in the same shell chain
-  # still hit "group does not exist" - dnf5 itself resets /etc/group as a
-  # side effect, scripts or not). So group/user/dir/config setup - a
-  # replica of sysc-greet's postinstall.sh
-  # (github.com/Nomadcxx/sysc-greet/blob/v1.1.9/scripts/postinstall.sh) -
-  # all happens BEFORE dnf5 runs, in the same RUN. Plain file installation
-  # with scripts disabled doesn't need "greeter" to already exist, so
-  # ordering it last avoids the problem entirely.
+  # separate RUN layer. `useradd` itself, even called right after `groupadd`
+  # in the very same chain (before dnf5 is even invoked), *still* reports
+  # the groups missing - despite `getent group ...` (also NSS-backed)
+  # proving those same groups ARE visible right after groupadd creates them.
+  # Whatever useradd's own group-existence check does differently from NSS
+  # lookups, it doesn't work here. So `groupadd` (proven reliable) creates
+  # the groups, but the greeter user and its group memberships are written
+  # directly to /etc/passwd, /etc/shadow, /etc/gshadow and /etc/group
+  # instead of going through useradd/usermod at all. This replicates
+  # sysc-greet's postinstall.sh
+  # (github.com/Nomadcxx/sysc-greet/blob/v1.1.9/scripts/postinstall.sh).
   - type: containerfile
     snippets:
       - |
         RUN groupadd -f -r video && \
             groupadd -f -r render && \
             groupadd -f -r input && \
-            useradd -M -d /var/lib/greeter -G video,render,input -s /usr/bin/nologin greeter && \
+            groupadd -f -r greeter && \
+            GREETER_ID=$(awk -F: 'BEGIN{max=200} $3>=200 && $3<1000 && $3>max{max=$3} END{print max+1}' /etc/passwd) && \
+            grep -q '^greeter:' /etc/passwd || echo "greeter:x:${GREETER_ID}:${GREETER_ID}::/var/lib/greeter:/usr/bin/nologin" >> /etc/passwd && \
+            grep -q '^greeter:' /etc/shadow || echo 'greeter:!:19000:0:99999:7:::' >> /etc/shadow && \
+            grep -q '^greeter:' /etc/gshadow || echo 'greeter:!::' >> /etc/gshadow && \
+            for g in video render input; do awk -F: -v g="$g" -v OFS=: '$1==g { if ($4=="") {$4="greeter"} else if ($4 !~ /(^|,)greeter(,|$)/) {$4=$4",greeter"} } {print}' /etc/group > /etc/group.new && mv /etc/group.new /etc/group; done && \
             mkdir -p /var/cache/sysc-greet /var/lib/greeter/Pictures/wallpapers /var/lib/greeter/.cache /var/lib/greeter/.config /var/lib/greeter/.local/state /tmp/greeter-cache && \
             chown -R greeter:greeter /var/cache/sysc-greet /var/lib/greeter /tmp/greeter-cache && \
             chmod 755 /var/lib/greeter && \

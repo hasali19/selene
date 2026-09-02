@@ -22,6 +22,12 @@ modules:
       - source: system
         destination: / # copies files/system/* (* means everything inside it) into your image's root folder /
 
+  - type: script
+    scripts:
+      # sysc-greet's postinstall scriptlet fails if the video/render/input
+      # groups don't exist yet, which aborts the whole dnf transaction below
+      - create-greeter-groups.sh
+
   - type: dnf
     install:
       packages:

@@ -44,16 +44,14 @@ modules:
         - swtpm-tools
         - waypipe
 
-  # sysc-greet's postinstall scriptlet fails if the video/render/input groups
-  # don't exist yet. Those groups are normally deferred until the systemd
-  # sysusers.d trigger runs, which only happens at the very end of the dnf
-  # module's transaction - too late for this package's own %post. Creating
-  # the groups and installing the RPM in the same RUN layer (rather than the
-  # dnf module, which resets /etc changes made by earlier layers) guarantees
-  # the groups exist by the time useradd needs them.
+  # DIAGNOSTIC BUILD: sysc-greet's postinstall keeps failing to see the
+  # video/render/input groups even when created in the same RUN layer
+  # immediately before the install. Print /etc/group state right before
+  # dnf5 runs so we can see what's actually happening instead of guessing
+  # further blind fixes.
   - type: containerfile
     snippets:
-      - RUN groupadd -f -r video; groupadd -f -r render; groupadd -f -r input; dnf5 install -y https://github.com/Nomadcxx/sysc-greet/releases/download/v1.1.9/sysc-greet-1.1.9-1.x86_64.rpm
+      - RUN groupadd -f -r video; groupadd -f -r render; groupadd -f -r input; echo '=== id/getent state before dnf5 install ==='; id; getent group video render input; grep -E '^(video|render|input):' /etc/group; ls -la /etc/group; dnf5 install -y https://github.com/Nomadcxx/sysc-greet/releases/download/v1.1.9/sysc-greet-1.1.9-1.x86_64.rpm
 
   - type: systemd
     system:

@@ -44,21 +44,29 @@ modules:
         - swtpm-tools
         - waypipe
 
-  # sysc-greet's own %post RPM scriptlet can't see groups/users created
-  # earlier in the build: RPM scriptlets run in a sandbox that doesn't share
-  # live /etc/group state, even within the exact same RUN layer as the
-  # install (verified via a diagnostic build: `getent group video render
-  # input` succeeds right before dnf5 runs, but sysc-greet's own useradd
-  # inside its scriptlet still reports the groups missing). Install with
-  # scriptlets disabled and replicate its postinstall.sh ourselves as a
-  # plain script instead, which isn't sandboxed and works correctly.
+  # sysc-greet's own %post RPM scriptlet can't see groups created earlier in
+  # the build (RPM scriptlets run sandboxed from live /etc/group, verified
+  # via a diagnostic build), AND /etc/group changes don't survive into a
+  # later, separate RUN layer either (verified: a follow-up "script" module
+  # step, in its own layer, hit the same "group does not exist" error even
+  # though the prior layer's groupadd had already succeeded). The only
+  # layer where the groups are reliably visible is the one they're created
+  # in, so everything - group creation, the noscripts install, and
+  # replicating sysc-greet's postinstall.sh
+  # (github.com/Nomadcxx/sysc-greet/blob/v1.1.9/scripts/postinstall.sh) for
+  # the greeter user/dirs/greetd config - has to happen in one RUN.
   - type: containerfile
     snippets:
-      - RUN groupadd -f -r video; groupadd -f -r render; groupadd -f -r input; dnf5 install -y --setopt=tsflags=noscripts https://github.com/Nomadcxx/sysc-greet/releases/download/v1.1.9/sysc-greet-1.1.9-1.x86_64.rpm
-
-  - type: script
-    scripts:
-      - sysc-greet-postinstall.sh
+      - |
+        RUN groupadd -f -r video && \
+            groupadd -f -r render && \
+            groupadd -f -r input && \
+            dnf5 install -y --setopt=tsflags=noscripts https://github.com/Nomadcxx/sysc-greet/releases/download/v1.1.9/sysc-greet-1.1.9-1.x86_64.rpm && \
+            useradd -M -d /var/lib/greeter -G video,render,input -s /usr/bin/nologin greeter && \
+            mkdir -p /var/cache/sysc-greet /var/lib/greeter/Pictures/wallpapers /var/lib/greeter/.cache /var/lib/greeter/.config /var/lib/greeter/.local/state /tmp/greeter-cache && \
+            chown -R greeter:greeter /var/cache/sysc-greet /var/lib/greeter /tmp/greeter-cache && \
+            chmod 755 /var/lib/greeter && \
+            printf '%s\n' '[terminal]' 'vt = 1' '' '[default_session]' 'command = "niri -c /etc/greetd/niri-greeter-config.kdl"' 'user = "greeter"' '' '[initial_session]' 'command = "niri -c /etc/greetd/niri-greeter-config.kdl"' 'user = "greeter"' > /etc/greetd/config.toml
 
   - type: systemd
     system:

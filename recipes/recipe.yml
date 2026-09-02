@@ -43,6 +43,7 @@ modules:
         - openconnect
         - swtpm-tools
         - waypipe
+        - https://github.com/Nomadcxx/sysc-greet/releases/download/v1.1.9/sysc-greet-1.1.9-1.x86_64.rpm
 
   - type: systemd
     system:

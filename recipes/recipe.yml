@@ -44,14 +44,21 @@ modules:
         - swtpm-tools
         - waypipe
 
-  # DIAGNOSTIC BUILD: sysc-greet's postinstall keeps failing to see the
-  # video/render/input groups even when created in the same RUN layer
-  # immediately before the install. Print /etc/group state right before
-  # dnf5 runs so we can see what's actually happening instead of guessing
-  # further blind fixes.
+  # sysc-greet's own %post RPM scriptlet can't see groups/users created
+  # earlier in the build: RPM scriptlets run in a sandbox that doesn't share
+  # live /etc/group state, even within the exact same RUN layer as the
+  # install (verified via a diagnostic build: `getent group video render
+  # input` succeeds right before dnf5 runs, but sysc-greet's own useradd
+  # inside its scriptlet still reports the groups missing). Install with
+  # scriptlets disabled and replicate its postinstall.sh ourselves as a
+  # plain script instead, which isn't sandboxed and works correctly.
   - type: containerfile
     snippets:
-      - RUN groupadd -f -r video; groupadd -f -r render; groupadd -f -r input; echo '=== id/getent state before dnf5 install ==='; id; getent group video render input; grep -E '^(video|render|input):' /etc/group; ls -la /etc/group; dnf5 install -y https://github.com/Nomadcxx/sysc-greet/releases/download/v1.1.9/sysc-greet-1.1.9-1.x86_64.rpm
+      - RUN groupadd -f -r video; groupadd -f -r render; groupadd -f -r input; dnf5 install -y --setopt=tsflags=noscripts https://github.com/Nomadcxx/sysc-greet/releases/download/v1.1.9/sysc-greet-1.1.9-1.x86_64.rpm
+
+  - type: script
+    scripts:
+      - sysc-greet-postinstall.sh
 
   - type: systemd
     system:

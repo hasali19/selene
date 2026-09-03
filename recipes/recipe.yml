@@ -9,6 +9,16 @@ description: This is my personal OS image.
 base-image: ghcr.io/ublue-os/base-main
 image-version: 44 # latest is also supported if you want new updates ASAP
 
+# stages are built separately, before the final image, and are useful for
+# compiling things from source without polluting the final image
+stages:
+  - name: regreet
+    from: registry.fedoraproject.org/fedora:44
+    modules:
+      - type: script
+        scripts:
+          - build-regreet.sh
+
 # module configuration, executed in order
 # you can include multiple instances of the same module
 modules:
@@ -43,7 +53,16 @@ modules:
     scripts:
       - install-kernel.sh
       - build-initramfs.sh
-      - install-regreet.sh
+
+  - type: copy
+    from: regreet
+    src: /usr/bin/regreet
+    dest: /usr/bin/regreet
+
+  - type: copy
+    from: regreet
+    src: /usr/lib/tmpfiles.d/regreet.conf
+    dest: /usr/lib/tmpfiles.d/regreet.conf
 
   - type: files
     files:

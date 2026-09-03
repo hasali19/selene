@@ -12,27 +12,22 @@ image-version: 44 # latest is also supported if you want new updates ASAP
 # module configuration, executed in order
 # you can include multiple instances of the same module
 modules:
-  - type: script
-    scripts:
-      - install-kernel.sh
-      - build-initramfs.sh
-
-  - type: files
-    files:
-      - source: system
-        destination: / # copies files/system/* (* means everything inside it) into your image's root folder /
-
   - type: dnf
     install:
       packages:
+        - accountsservice # required by regreet
         - adw-gtk3-theme
         - btop
+        - cage # wayland compositor used to run regreet
         - cascadia-code-nf-fonts
         - dmidecode
         - edk2-ovmf
         - fish
+        - glycin # required by regreet, for background images
+        - glycin-loaders
         - gnome-boxes
         - greetd
+        - gtk4 # required by regreet
         - kde-connect
         - kf6-kitemmodels  # required for kde connect plugin settings to work
         - libatomic
@@ -43,7 +38,17 @@ modules:
         - openconnect
         - swtpm-tools
         - waypipe
-        - https://github.com/Nomadcxx/sysc-greet/releases/download/v1.1.9/sysc-greet-1.1.9-1.x86_64.rpm
+
+  - type: script
+    scripts:
+      - install-kernel.sh
+      - build-initramfs.sh
+      - install-regreet.sh
+
+  - type: files
+    files:
+      - source: system
+        destination: / # copies files/system/* (* means everything inside it) into your image's root folder /
 
   - type: systemd
     system:

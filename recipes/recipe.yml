@@ -31,18 +31,30 @@ modules:
         - dmidecode
         - edk2-ovmf
         - fish
+        - git
         - gnome-boxes
         - greetd
+        - gtk4
         - kde-connect
         - kf6-kitemmodels  # required for kde connect plugin settings to work
+        - libadwaita
         - libatomic
         - liquidctl
         - nautilus
         - niri
         - noctalia
         - openconnect
+        - python3-cairo  # required by nirimod's keyboard visualizer widget
+        - python3-gobject  # PyGObject bindings, required by nirimod
+        - python3-pip  # required to install nirimod
         - swtpm-tools
         - waypipe
+
+  - type: script
+    scripts:
+      # installs nirimod (https://github.com/srinivasr/nirimod), a GTK4/
+      # libadwaita GUI configurator for niri, system-wide into the image
+      - install-nirimod.sh
 
   - type: systemd
     system:

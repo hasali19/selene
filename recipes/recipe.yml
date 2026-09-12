@@ -44,6 +44,16 @@ modules:
         - swtpm-tools
         - waypipe
 
+  - type: dnf
+    repos:
+      files:
+        - https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo
+      cleanup: true
+    install:
+      packages:
+        - terra-release
+        - noctalia-greeter
+
   - type: systemd
     system:
       enabled:

@@ -5,8 +5,12 @@ set -ouex pipefail
 # Copy the contents of system_files/ of the git repo to /
 cp -avf "/ctx/system_files"/. /
 
-/ctx/install-kernel.sh
-KERNEL_SUFFIX=cachyos /ctx/build-initramfs.sh
+KERNEL_VARIANT="${KERNEL_VARIANT:-fedora}"
+
+if [[ "${KERNEL_VARIANT}" == "cachyos" ]]; then
+    /ctx/install-kernel.sh
+    KERNEL_SUFFIX=cachyos /ctx/build-initramfs.sh
+fi
 
 ### Install packages
 

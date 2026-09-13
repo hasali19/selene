@@ -93,12 +93,12 @@ sudoif command *args:
 #
 
 # Build the image using the specified parameters
-build $target_image=image_name $tag=default_tag:
+build $target_image=image_name $tag=default_tag $kernel_variant="fedora":
     #!/usr/bin/env bash
 
     set -euox pipefail
 
-    BUILD_ARGS=()
+    BUILD_ARGS=("--build-arg" "KERNEL_VARIANT=${kernel_variant}")
     LABELS=()
     if [[ -z "$(git status -s)" ]]; then
         GIT_SHA=$(git rev-parse --short HEAD)
@@ -118,7 +118,7 @@ build $target_image=image_name $tag=default_tag:
     LABELS+=("--label" "io.artifacthub.package.prerelease=false")
     LABELS+=("--label" "org.opencontainers.image.created=$(date -u +%Y\-%m\-%d\T%H\:%M\:%S\Z)")
     LABELS+=("--label" "org.opencontainers.image.description={{ image_desc }}")
-    LABELS+=("--label" "org.opencontainers.image.title={{ image_name }}")
+    LABELS+=("--label" "org.opencontainers.image.title=${target_image}")
     LABELS+=("--label" "org.opencontainers.image.vendor={{ repo_organization }}")
 
     # This actually builds the image!

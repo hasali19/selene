@@ -30,6 +30,12 @@ FROM ghcr.io/ublue-os/base-main:44
 ## make modifications desired in your image and install packages by modifying the build.sh script
 ## the following RUN directive does all the things required to run "build.sh" as recommended.
 
+## KERNEL_VARIANT selects which kernel build.sh installs:
+##   - fedora
+##   - cachyos
+ARG KERNEL_VARIANT=fedora
+ENV KERNEL_VARIANT=${KERNEL_VARIANT}
+
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \

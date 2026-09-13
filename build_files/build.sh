@@ -13,7 +13,29 @@ cp -avf "/ctx/system_files"/. /
 # https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/43/x86_64/repoview/index.html&protocol=https&redirect=1
 
 # this installs a package from fedora repos
-dnf5 install -y tmux
+dnf5 install -y \
+    adw-gtk3-theme \
+    btop \
+    cascadia-code-nf-fonts \
+    dmidecode \
+    edk2-ovmf \
+    fish \
+    gnome-boxes \
+    greetd \
+    kde-connect \
+    kf6-kitemmodels \
+    libatomic \
+    liquidctl \
+    nautilus \
+    niri \
+    noctalia \
+    openconnect \
+    swtpm-tools \
+    waypipe
+
+dnf5 config-manager addrepo --from-repofile=https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo && \
+    dnf5 install -y noctalia-greeter && \
+    rm -f /etc/yum.repos.d/terra.repo
 
 # Use a COPR Example:
 #
@@ -25,3 +47,5 @@ dnf5 install -y tmux
 #### Example for enabling a System Unit File
 
 systemctl enable podman.socket
+
+systemctl enable greetd.service

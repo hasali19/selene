@@ -1,4 +1,11 @@
-# selene &nbsp; [![bluebuild build badge](https://github.com/hasali19/selene/actions/workflows/build.yml/badge.svg)](https://github.com/hasali19/selene/actions/workflows/build.yml)
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="branding/logo-dark.svg">
+    <img alt="selene" src="branding/logo-light.svg">
+  </picture>
+</h1>
+
+[![bluebuild build badge](https://github.com/hasali19/selene/actions/workflows/build.yml/badge.svg)](https://github.com/hasali19/selene/actions/workflows/build.yml)
 
 See the [BlueBuild docs](https://blue-build.org/how-to/setup/) for quick setup instructions for setting up your own repository based on this template.
 

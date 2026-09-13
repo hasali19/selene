@@ -12,9 +12,18 @@ image-version: 44 # latest is also supported if you want new updates ASAP
 # module configuration, executed in order
 # you can include multiple instances of the same module
 modules:
+  # must come before build-initramfs.sh: dracut bakes the plymouth theme into
+  # the initramfs, so files/system has to be in place before it runs
+  - type: files
+    files:
+      - source: system
+        destination: / # copies files/system/* (* means everything inside it) into your image's root folder /
+
   # replace the stock Fedora kernel with the CachyOS one and rebuild the
   # initramfs for it
   - type: script
+    env:
+      KERNEL_SUFFIX: cachyos
     scripts:
       - install-kernel.sh
       - build-initramfs.sh

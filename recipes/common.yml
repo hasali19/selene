@@ -1,13 +1,9 @@
 ---
 # yaml-language-server: $schema=https://schema.blue-build.org/module-list-v1.json
 # Modules shared by every selene image variant. Kernel-specific modules live in
-# the individual recipe files.
+# the individual recipe files, as does the files module: it has to run before
+# any initramfs rebuild, so each recipe places it itself.
 modules:
-  - type: files
-    files:
-      - source: system
-        destination: / # copies files/system/* (* means everything inside it) into your image's root folder /
-
   - type: dnf
     install:
       packages:

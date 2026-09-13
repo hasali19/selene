@@ -14,4 +14,17 @@ image-version: 44 # latest is also supported if you want new updates ASAP
 # this image keeps the stock Fedora kernel from the base image, see
 # recipe-cachyos.yml for the CachyOS kernel variant
 modules:
+  # must come before build-initramfs.sh: dracut bakes the plymouth theme into
+  # the initramfs, so files/system has to be in place before it runs
+  - type: files
+    files:
+      - source: system
+        destination: / # copies files/system/* (* means everything inside it) into your image's root folder /
+
+  # the stock kernel comes from the base image, so there is nothing to install,
+  # but the initramfs still has to be rebuilt to pick up files/system
+  - type: script
+    scripts:
+      - build-initramfs.sh
+
   - from-file: common.yml

@@ -1,9 +1,9 @@
 ---
 # yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
 # image will be published to ghcr.io/<user>/<name>
-name: selene
+name: selene-cachyos
 # description will be included in the image's metadata
-description: This is my personal OS image.
+description: This is my personal OS image, with the CachyOS kernel.
 
 # the base image to build on top of (FROM) and the version tag to use
 base-image: ghcr.io/ublue-os/base-main
@@ -11,7 +11,12 @@ image-version: 44 # latest is also supported if you want new updates ASAP
 
 # module configuration, executed in order
 # you can include multiple instances of the same module
-# this image keeps the stock Fedora kernel from the base image, see
-# recipe-cachyos.yml for the CachyOS kernel variant
 modules:
+  # replace the stock Fedora kernel with the CachyOS one and rebuild the
+  # initramfs for it
+  - type: script
+    scripts:
+      - install-kernel.sh
+      - build-initramfs.sh
+
   - from-file: common.yml

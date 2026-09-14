@@ -5,6 +5,10 @@ set -ouex pipefail
 # Copy the contents of system_files/ of the git repo to /
 cp -avf "/ctx/system_files"/. /
 
+# generates /usr/share/plymouth/themes/spinner/watermark.png from
+# branding/logo-dark.svg; must run before build-initramfs.sh below
+/ctx/build-watermark.sh
+
 KERNEL_VARIANT="${KERNEL_VARIANT:-fedora}"
 
 if [[ "${KERNEL_VARIANT}" == "cachyos" ]]; then

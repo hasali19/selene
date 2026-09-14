@@ -10,6 +10,11 @@ KERNEL_VARIANT="${KERNEL_VARIANT:-fedora}"
 if [[ "${KERNEL_VARIANT}" == "cachyos" ]]; then
     /ctx/install-kernel.sh
     KERNEL_SUFFIX=cachyos /ctx/build-initramfs.sh
+else
+    # dracut bakes the plymouth theme into the initramfs, so it has to be
+    # rebuilt even for the stock kernel to pick up files copied from
+    # system_files above
+    /ctx/build-initramfs.sh
 fi
 
 ### Install packages

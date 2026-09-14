@@ -2,12 +2,10 @@
 
 set -ouex pipefail
 
-# Copy the contents of system_files/ of the git repo to /
+# Copy the contents of system_files/ of the git repo to / (this includes
+# usr/share/plymouth/themes/spinner/watermark.png, rendered from
+# branding/logo-dark.svg by the "watermark" build stage in the Containerfile)
 cp -avf "/ctx/system_files"/. /
-
-# generates /usr/share/plymouth/themes/spinner/watermark.png from
-# branding/logo-dark.svg; must run before build-initramfs.sh below
-/ctx/build-watermark.sh
 
 KERNEL_VARIANT="${KERNEL_VARIANT:-fedora}"
 

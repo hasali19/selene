@@ -1,7 +1,19 @@
+# Renders the plymouth watermark from the SVG logo. Kept in its own stage,
+# based on a small image with librsvg already packaged, so that neither it
+# nor the font used to render the wordmark have to be installed (and then
+# removed again) in the final image.
+FROM docker.io/library/alpine:3.20 AS watermark
+RUN apk add --no-cache rsvg-convert fontconfig
+COPY branding/logo-dark.svg branding/Audiowide-Regular.ttf /branding/
+RUN install -Dm644 /branding/Audiowide-Regular.ttf /usr/share/fonts/audiowide/Audiowide-Regular.ttf && \
+    fc-cache -f && \
+    rsvg-convert -w 300 -h 72 /branding/logo-dark.svg -o /watermark.png
+
 # Allow build scripts to be referenced without being copied into the final image
 FROM scratch AS ctx
 COPY build_files /
 COPY system_files /system_files
+COPY --from=watermark /watermark.png /system_files/usr/share/plymouth/themes/spinner/watermark.png
 
 # Base Image
 FROM ghcr.io/ublue-os/base-main:44

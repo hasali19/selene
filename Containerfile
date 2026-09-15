@@ -7,7 +7,7 @@ RUN apk add --no-cache rsvg-convert fontconfig
 COPY branding/logo-dark.svg branding/Audiowide-Regular.ttf /branding/
 RUN install -Dm644 /branding/Audiowide-Regular.ttf /usr/share/fonts/audiowide/Audiowide-Regular.ttf && \
     fc-cache -f && \
-    rsvg-convert -w 300 -h 72 /branding/logo-dark.svg -o /watermark.png
+    rsvg-convert -w 225 -h 54 /branding/logo-dark.svg -o /watermark.png
 
 # Allow build scripts to be referenced without being copied into the final image
 FROM scratch AS ctx

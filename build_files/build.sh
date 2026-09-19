@@ -2,22 +2,8 @@
 
 set -ouex pipefail
 
-# Copy the contents of system_files/ of the git repo to / (this includes
-# usr/share/plymouth/themes/spinner/watermark.png, rendered from
-# branding/logo-dark.svg by the "watermark" build stage in the Containerfile)
+# Copy the contents of system_files/ of the git repo to /
 cp -avf "/ctx/system_files"/. /
-
-KERNEL_VARIANT="${KERNEL_VARIANT:-fedora}"
-
-if [[ "${KERNEL_VARIANT}" == "cachyos" ]]; then
-    /ctx/install-kernel.sh
-    KERNEL_SUFFIX=cachyos /ctx/build-initramfs.sh
-else
-    # dracut bakes the plymouth theme into the initramfs, so it has to be
-    # rebuilt even for the stock kernel to pick up files copied from
-    # system_files above
-    /ctx/build-initramfs.sh
-fi
 
 ### Install packages
 
@@ -25,6 +11,8 @@ fi
 # RPMfusion repos are available by default in ublue main images
 # List of rpmfusion packages can be found here:
 # https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/43/x86_64/repoview/index.html&protocol=https&redirect=1
+
+dnf5 -y copr enable ublue-os/packages
 
 # this installs a package from fedora repos
 dnf5 install -y \
@@ -45,7 +33,10 @@ dnf5 install -y \
     noctalia \
     openconnect \
     swtpm-tools \
+    uupd \
     waypipe
+
+systemctl disable rpm-ostreed-automatic.timer
 
 dnf5 config-manager addrepo --from-repofile=https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo && \
     dnf5 install -y noctalia-greeter && \

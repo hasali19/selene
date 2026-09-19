@@ -38,6 +38,10 @@ dnf5 install -y \
 
 systemctl disable rpm-ostreed-automatic.timer
 
+# There's a regression in 0.8.2 causing issues with steam popup menus
+# TODO: Remove when new xwayland-satellite version is released
+dnf5 -y downgrade xwayland-satellite-0.8.1-1.fc44
+
 dnf5 config-manager addrepo --from-repofile=https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo && \
     dnf5 install -y noctalia-greeter && \
     rm -f /etc/yum.repos.d/terra.repo

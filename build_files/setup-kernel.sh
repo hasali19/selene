@@ -10,4 +10,4 @@ if [[ "${KERNEL_VARIANT}" == "cachyos" ]]; then
     KERNEL_SUFFIX=cachyos
 fi
 
-/ctx/build-initramfs.sh
+KERNEL_SUFFIX="$KERNEL_SUFFIX" /ctx/build-initramfs.sh

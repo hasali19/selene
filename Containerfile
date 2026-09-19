@@ -13,7 +13,6 @@ RUN install -Dm644 /branding/Audiowide-Regular.ttf /usr/share/fonts/audiowide/Au
 FROM scratch AS ctx
 COPY build_files /
 COPY system_files /system_files
-COPY --from=watermark /watermark.png /system_files/usr/share/plymouth/themes/spinner/watermark.png
 
 # Base Image
 FROM ghcr.io/ublue-os/base-main:44
@@ -47,6 +46,14 @@ FROM ghcr.io/ublue-os/base-main:44
 ##   - cachyos
 ARG KERNEL_VARIANT=fedora
 ENV KERNEL_VARIANT=${KERNEL_VARIANT}
+
+COPY --from=watermark /watermark.png /usr/share/plymouth/themes/spinner/watermark.png
+
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=tmpfs,dst=/tmp \
+    /ctx/setup-kernel.sh
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \

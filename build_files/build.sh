@@ -37,6 +37,7 @@ dnf5 install -y \
     waypipe
 
 systemctl disable rpm-ostreed-automatic.timer
+systemctl enable uupd.timer
 
 # There's a regression in 0.8.2 causing issues with steam popup menus
 # TODO: Remove when new xwayland-satellite version is released

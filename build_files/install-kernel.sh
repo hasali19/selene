@@ -13,10 +13,10 @@ popd
 # cleanup leftovers that are not covered by kernel-* packages for some reason
 rm -rf /usr/lib/modules
 
-dnf5 remove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra
+dnf5 -y remove kernel kernel-core kernel-modules kernel-modules-core kernel-modules-extra
 
 dnf5 -y copr enable bieszczaders/kernel-cachyos
-dnf5 install -y kernel-cachyos
+dnf5 -y install kernel-cachyos
 
 # cd /etc/yum.repos.d/
 # sudo wget https://copr.fedorainfracloud.org/coprs/bieszczaders/kernel-cachyos/repo/fedora-$(rpm -E %fedora)/bieszczaders-kernel-cachyos-fedora-$(rpm -E %fedora).repo

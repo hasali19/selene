@@ -31,6 +31,7 @@ dnf5 install -y \
     fprintd-pam \
     gnome-boxes \
     greetd \
+    helix \
     kde-connect \
     kf6-kitemmodels \
     libatomic \

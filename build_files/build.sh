@@ -20,7 +20,9 @@ dnf5 install -y \
     btop \
     cascadia-code-nf-fonts \
     dmidecode \
+    du-dust \
     edk2-ovmf \
+    fd-find \
     fish \
     fprintd \
     fprintd-pam \
@@ -34,6 +36,7 @@ dnf5 install -y \
     niri \
     noctalia \
     openconnect \
+    ripgrep \
     swtpm-tools \
     uupd \
     waypipe

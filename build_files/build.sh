@@ -22,6 +22,8 @@ dnf5 install -y \
     dmidecode \
     edk2-ovmf \
     fish \
+    fprintd \
+    fprintd-pam \
     gnome-boxes \
     greetd \
     kde-connect \

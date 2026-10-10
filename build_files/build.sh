@@ -43,7 +43,8 @@ dnf5 install -y \
     ripgrep \
     swtpm-tools \
     uupd \
-    waypipe
+    waypipe \
+    --exclude mako
 
 systemctl disable rpm-ostreed-automatic.timer
 systemctl enable uupd.timer

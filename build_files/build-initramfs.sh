@@ -3,7 +3,16 @@
 set -eoux pipefail
 
 echo "::group::Executing build-initramfs"
-trap 'echo "::endgroup::"' EXIT
+
+# The base image stamps its build date into os-release (e.g. 44.20261017.0),
+# and dracut copies os-release into the initramfs as initrd-release. That alone
+# makes the initramfs (~240MB) differ on every build, so every update had to
+# re-download it. Build against a copy with the date stripped, then put the
+# real file back.
+OS_RELEASE=/usr/lib/os-release
+mv "$OS_RELEASE" "$OS_RELEASE.orig"
+trap 'mv -f "$OS_RELEASE.orig" "$OS_RELEASE"; echo "::endgroup::"' EXIT
+sed -E -e '/^OSTREE_VERSION=/d' -e 's/\b([0-9]+)\.[0-9]{8}\.[0-9]+\b/\1/g' "$OS_RELEASE.orig" > "$OS_RELEASE"
 
 # kernel package suffix, e.g. "cachyos" for kernel-cachyos. Empty (the default)
 # targets the stock Fedora kernel. Needs a default because of set -u.

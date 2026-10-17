@@ -70,3 +70,8 @@ dnf5 config-manager addrepo --from-repofile=https://github.com/terrapkg/subatomi
 systemctl enable podman.socket
 
 systemctl enable greetd.service
+
+# Directories shared by several packages otherwise end up with build-dependent
+# mtimes, which makes chunkah emit different layers for identical content.
+# ostree zeroes mtimes on deployment anyway, so this changes nothing at runtime.
+find /usr /etc /opt -xdev -type d -exec touch -h -d @0 {} +

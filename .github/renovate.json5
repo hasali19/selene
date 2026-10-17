@@ -6,6 +6,18 @@
 
   "rebaseWhen": "never",
 
+  // Renovate doesn't read Justfiles, so point it at the pinned chunkah image.
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/(^|/)Justfile$/"],
+      "matchStrings": [
+        "(?<depName>quay\\.io/coreos/chunkah):(?<currentValue>v[\\d.]+)@(?<currentDigest>sha256:[a-f0-9]{64})"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ],
+
   "packageRules": [
     {
       "automerge": true,

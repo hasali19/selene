@@ -21,3 +21,8 @@ QUALIFIED_KERNEL="$(dnf5 repoquery --installed --queryformat='%{evr}.%{arch}' "k
 /usr/bin/dracut --no-hostonly --kver "$QUALIFIED_KERNEL" --reproducible --zstd -v --add ostree --add fido2 -f "/usr/lib/modules/$QUALIFIED_KERNEL/initramfs.img"
 
 chmod 0600 /usr/lib/modules/"$QUALIFIED_KERNEL"/initramfs.img
+
+# chunkah keeps the mtime of files no package owns, so a freshly generated
+# initramfs would get a new layer on every build even when its contents are
+# identical. Give it the kernel's mtime (set by the kernel package) instead.
+touch -r /usr/lib/modules/"$QUALIFIED_KERNEL"/vmlinuz /usr/lib/modules/"$QUALIFIED_KERNEL"/initramfs.img

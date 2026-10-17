@@ -30,6 +30,7 @@ dnf5 install -y \
     fprintd \
     fprintd-pam \
     gnome-boxes \
+    gnome-keyring-pam \
     greetd \
     helix \
     kde-connect \

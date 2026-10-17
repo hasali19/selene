@@ -145,17 +145,20 @@ rechunk $target_image=image_name $tag=default_tag:
     trap 'rm -f "${CHUNKAH_CONFIG_FILE}"; rm -rf "${CHUNKAH_OUTPUT_DIR}"' EXIT
     podman inspect "${target_image}:${tag}" > "${CHUNKAH_CONFIG_FILE}"
 
+    SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH:-$(git log -1 --format=%ct)}"
+
     podman run --rm \
       --mount=type=image,src="${target_image}:${tag}",target=/chunkah \
       -v "${CHUNKAH_CONFIG_FILE}:/chunkah-config.json:ro,Z" \
       -v "${CHUNKAH_OUTPUT_DIR}:/run/out:Z" \
-      quay.io/coreos/chunkah:latest \
+      quay.io/coreos/chunkah:v0.7.1@sha256:71e593421c5de7dcc7c8c5c50e98d3bac572055a76f399f61a491d123c20a523 \
       build \
       --verbose \
       --compressed \
       --max-layers 128 \
       --prune /sysroot/ \
       --label ostree.commit- --label ostree.final-diffid- \
+      --source-date-epoch "${SOURCE_DATE_EPOCH}" \
       --config /chunkah-config.json \
       --output oci:/run/out/chunked
 

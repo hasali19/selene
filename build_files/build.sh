@@ -13,9 +13,9 @@ cp -avf "/ctx/system_files"/. /
 # https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/43/x86_64/repoview/index.html&protocol=https&redirect=1
 
 dnf5 -y copr enable ublue-os/packages
-dnf5 -y copr enable hasali19/niri-git
+dnf5 -y copr enable hasali19/selene
 
-echo "priority=1" | sudo tee -a /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:hasali19:niri-git.repo
+echo "priority=1" | sudo tee -a /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:hasali19:selene.repo
 
 # this installs a package from fedora repos
 dnf5 install -y \
@@ -44,15 +44,10 @@ dnf5 install -y \
     ripgrep \
     swtpm-tools \
     uupd \
-    waypipe \
-    --exclude mako
+    waypipe
 
 systemctl disable rpm-ostreed-automatic.timer
 systemctl enable uupd.timer
-
-# There's a regression in 0.8.2 causing issues with steam popup menus
-# TODO: Remove when new xwayland-satellite version is released
-dnf5 -y downgrade xwayland-satellite-0.8.1-1.fc44
 
 dnf5 config-manager addrepo --from-repofile=https://github.com/terrapkg/subatomic-repos/raw/main/terra.repo && \
     dnf5 install -y noctalia-greeter && \

@@ -43,6 +43,8 @@ dnf5 install -y \
     openconnect \
     ripgrep \
     swtpm-tools \
+    tuned \
+    tuned-ppd \
     uupd \
     waypipe
 

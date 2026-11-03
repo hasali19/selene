@@ -30,7 +30,6 @@ dnf5 install -y \
     fprintd \
     fprintd-pam \
     gnome-boxes \
-    gnome-keyring-pam \
     greetd \
     helix \
     kde-connect \
@@ -68,10 +67,10 @@ systemctl enable podman.socket
 
 systemctl enable greetd.service
 
-# Unlock gnome-keyring on login
-sed -i -E 's/^#\s*(-(auth|session)\s+optional\s+pam_gnome_keyring\.so)/\1/' /etc/pam.d/greetd
-grep -qE '^-auth\s+optional\s+pam_gnome_keyring\.so' /etc/pam.d/greetd
-grep -qE '^-session\s+optional\s+pam_gnome_keyring\.so' /etc/pam.d/greetd
+# Unlock oo7 on login
+sed -i -E 's/^#\s*(-(auth|session)\s+optional\s+pam_oo7\.so)/\1/' /usr/lib/pam.d/greetd
+grep -qE '^-auth\s+optional\s+pam_oo7\.so' /usr/lib/pam.d/greetd
+grep -qE '^-session\s+optional\s+pam_oo7\.so' /usr/lib/pam.d/greetd
 
 # Directories shared by several packages otherwise end up with build-dependent
 # mtimes, which makes chunkah emit different layers for identical content.

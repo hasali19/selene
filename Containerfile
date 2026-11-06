@@ -2,7 +2,7 @@
 # based on a small image with librsvg already packaged, so that neither it
 # nor the font used to render the wordmark have to be installed (and then
 # removed again) in the final image.
-FROM docker.io/library/alpine:3.24@sha256:be2656061b536c1883c4034790e21d0a09c5aaaf51968b89368a3c0371ea2c9a AS watermark
+FROM docker.io/library/alpine:3.24@sha256:3f4d6b32e26703c6082839234f43769d5046b3ac7c910033911d1e71d8cd630a AS watermark
 RUN apk add --no-cache rsvg-convert fontconfig
 COPY branding/logo-dark.svg branding/Audiowide-Regular.ttf /branding/
 RUN install -Dm644 /branding/Audiowide-Regular.ttf /usr/share/fonts/audiowide/Audiowide-Regular.ttf && \

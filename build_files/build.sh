@@ -36,6 +36,7 @@ dnf5 install -y \
     kf6-kitemmodels \
     libatomic \
     liquidctl \
+    luciole \
     nautilus \
     niri \
     noctalia \

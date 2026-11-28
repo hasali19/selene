@@ -1,0 +1,2 @@
+# Disable touchpad wakeup on Lenovo Yoga 9i as it's buggy and prevents sleep
+ACTION=="add|change", SUBSYSTEM=="i2c", KERNEL=="i2c-ELAN06FA:00", ATTR{power/wakeup}="disabled"
